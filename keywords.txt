@@ -1,0 +1,25 @@
+#######################################
+# Syntax Coloring Map For simplyEncoder
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+simplyEncoder	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setup	KEYWORD2
+read	KEYWORD2
+getCount	KEYWORD2
+getPinA	KEYWORD2
+getPinB		KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
