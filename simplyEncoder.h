@@ -25,20 +25,20 @@ class simplyEncoder {
   public:
   //2 type of deconding schemes. For most use decoderType=0 but for ebe high resolution use 1
   //pullup must be set false if you already have pullup resistors on encoder!
-    void setup(const uint8_t pinA, const uint8_t pinB,bool pullup=true, uint8_t decoderType=0);
+    void setup(const uint8_t a, const uint8_t b,bool pullup=true, uint8_t decoderType=0);
     int read();
 
-    inline int getCount() const { return count; }
-    inline uint8_t getPinA() const { return pinA; }
-    inline uint8_t getPinB() const { return pinA; }
+    inline int getCount() const { return _count; }
+    inline uint8_t getPinA() const { return _pinA; }
+    inline uint8_t getPinB() const { return _pinA; }
     
   private:
-    uint8_t pinA;
-    uint8_t pinB;
-    int state;
-    int prevState;
-    int count;
-    int cycleCount;
+    uint8_t _pinA;
+    uint8_t _pinB;
+    int _state;
+    int _prevState;
+    int _count;
+    int _cycleCount;
 	uint8_t		_decoding;
     static const uint8_t cwA[];                           
     static const uint8_t ccwA[];    

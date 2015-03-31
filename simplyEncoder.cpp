@@ -1,69 +1,65 @@
 #include "simplyEncoder.h"
 
-#if defined(__FASTSPI)
-#include <../digitalWriteFast/digitalWriteFast.h>
-#endif
-
 const uint8_t simplyEncoder::cwB[4] = {2,0,3,1};
 const uint8_t simplyEncoder::ccwB[4] = {1,3,0,2};
 const uint8_t simplyEncoder::cwA[4] = {3,0,2,1};
 const uint8_t simplyEncoder::ccwA[4] = {1,2,0,3};
 			
 			
-void simplyEncoder::setup(const uint8_t pinA, const uint8_t pinB,bool pullup, uint8_t decoderType) {
-	this->pinA = pinA;
-	this->pinB = pinB;
+void simplyEncoder::setup(const uint8_t a, const uint8_t b,bool pullup, uint8_t decoderType) {
+	_pinA = a;
+	_pinB = b;
 	if (decoderType > 1) decoderType = 1;
-	this->_decoding = decoderType;
-	pinMode(this->pinA, INPUT);
-	pinMode(this->pinB, INPUT);
+	_decoding = decoderType;
+	pinMode(_pinA, INPUT);
+	pinMode(_pinB, INPUT);
 	if (pullup){
-		digitalWrite(this->pinA, HIGH);
-		digitalWrite(this->pinB, HIGH);
+		digitalWrite(_pinA, HIGH);
+		digitalWrite(_pinB, HIGH);
 	}
-	this->state = 0;
-	this->prevState = 0;
-	this->count = 0;
-	this->cycleCount = 0;
+	_state = 0;
+	_prevState = 0;
+	_count = 0;
+	_cycleCount = 0;
 }
 
 
 
 int simplyEncoder::read() {
 	int dir = 0;
-#if defined(__FASTSPI)
-	const byte a = digitalReadFast(this->pinA);
-	const byte b = digitalReadFast(this->pinB);
+#if defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MKL26Z64__)
+	const byte a = digitalReadFast(_pinA);
+	const byte b = digitalReadFast(_pinB);
 #else
-	const byte a = digitalRead(this->pinA);
-	const byte b = digitalRead(this->pinB);
+	const byte a = digitalRead(_pinA);
+	const byte b = digitalRead(_pinB);
 #endif
-	this->state = (a << 1 | b);
-	if (state != prevState) {
-		if (this->_decoding == 0){
-			if (state == cwA[prevState]) {
-				cycleCount++;//  forward
-			} else if (state == ccwA[prevState]) {
-				cycleCount--;//  backward
+	_state = (a << 1 | b);
+	if (_state != _prevState) {
+		if (_decoding == 0){
+			if (_state == cwA[_prevState]) {
+				_cycleCount++;//  forward
+			} else if (_state == ccwA[_prevState]) {
+				_cycleCount--;//  backward
 			}
 		} else {
-			if (state == cwB[prevState]) {
-				cycleCount++;//  forward
-			} else if (state == ccwB[prevState]) {
-				cycleCount--;//  backward
+			if (_state == cwB[_prevState]) {
+				_cycleCount++;//  forward
+			} else if (_state == ccwB[_prevState]) {
+				_cycleCount--;//  backward
 			}
 		}
-		if (state == 3) {
-			if (cycleCount > 0) {
-				count++;
+		if (_state == 3) {
+			if (_cycleCount > 0) {
+				_count++;
 				dir = 1;
-			} else if(cycleCount < 0) {
-				count--;
+			} else if(_cycleCount < 0) {
+				_count--;
 				dir = -1;
 			}
-			cycleCount = 0;
+			_cycleCount = 0;
 		}
-		prevState = state;
+		_prevState = _state;
 	}
 	return dir;
 }
